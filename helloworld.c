@@ -93,8 +93,10 @@ int main()
 				horz++;
 				moved = 1;
 			}
+			//else
+				//moved = 0;  These lines can be used to make following line of code redundant.
     	}
-    	if(rxbuf[0] != 'u' && rxbuf[0] != 'd' && rxbuf[0] != 'l' && rxbuf[0] != 'r') moved = 0;
+    	if(rxbuf[0] != 'u' && rxbuf[0] != 'd' && rxbuf[0] != 'l' && rxbuf[0] != 'r') moved = 0; // redundant
     	if(horz == 20) horz = 0;
     	else if(horz == -1) horz = 19;
     	if(vert == 15) vert = 0;

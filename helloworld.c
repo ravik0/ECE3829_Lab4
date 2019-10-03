@@ -69,11 +69,14 @@ int main()
     u16 led_switched = 0;
     u8 LED = 1;
 
+    //EC
+    u32 color = 15;
+    u8 colorbuff[4];
+
     data = XIOModule_Initialize(&iomodule, XPAR_IOMODULE_0_DEVICE_ID);
     data = XIOModule_Start(&iomodule);
 
     while(1) {
-    	//TODO: Debounce keys properly
     	//MOVING BLOCK
     	data = XIOModule_Recv(&iomodule, rxbuf, 1);
     	if(moved == 0) {
@@ -95,6 +98,8 @@ int main()
 			}
     	}
     	if(rxbuf[0] != 'u' && rxbuf[0] != 'd' && rxbuf[0] != 'l' && rxbuf[0] != 'r') moved = 0;
+
+		//SEND BLOCK DATA
     	if(horz == 20) horz = 0;
     	else if(horz == -1) horz = 19;
     	if(vert == 15) vert = 0;
@@ -103,6 +108,48 @@ int main()
     	blockPos = blockPos << 4;
     	blockPos = blockPos | vert;
     	XIOModule_DiscreteWrite(&iomodule, 1, blockPos);
+
+		//COLOR
+		if(rxbuf[0] == 'c') {
+			xil_printf("Please enter a red value from 0000 to 1111\n\r");
+			colorbuff[0] = inbyte();
+			colorbuff[1] = inbyte();
+			colorbuff[2] = inbyte();
+			colorbuff[3] = inbyte();
+			xil_printf("Red value is %c%c%c%c\n\r", colorbuff[0],colorbuff[1],colorbuff[2],colorbuff[3]);
+			for(int i = 0; i < 4; i++) {
+				int toShift = 0;
+				if(colorbuff[i] == '1') toShift = 1;
+				color |= toShift;
+				color <<= 1;
+			}
+			xil_printf("Please enter a blue value from 0000 to 1111\n\r");
+			colorbuff[0] = inbyte();
+			colorbuff[1] = inbyte();
+			colorbuff[2] = inbyte();
+			colorbuff[3] = inbyte();
+			xil_printf("Blue value is %c%c%c%c\n\r", colorbuff[0],colorbuff[1],colorbuff[2],colorbuff[3]);
+			for(int i = 0; i < 4; i++) {
+				int toShift = 0;
+				if(colorbuff[i] == '1') toShift = 1;
+				color |= toShift;
+				color <<= 1;
+			}
+			xil_printf("Please enter a green value from 0000 to 1111\n\r");
+			colorbuff[0] = inbyte();
+			colorbuff[1] = inbyte();
+			colorbuff[2] = inbyte();
+			colorbuff[3] = inbyte();
+			xil_printf("Green value is %c%c%c%c\n\r", colorbuff[0],colorbuff[1],colorbuff[2],colorbuff[3]);
+			for(int i = 0; i < 4; i++) {
+				int toShift = 0;
+				if(colorbuff[i] == '1') toShift = 1;
+				color |= toShift;
+				color <<= 1;
+			}
+		}
+		XIOModule_DiscreteWrite(&iomodule, 4, color);
+
     	//SEGMENT
         u16 D = horz >= 10 ? 1 : 0;
         u16 C = horz >= 10 ? horz-10 : horz;

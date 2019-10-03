@@ -48,6 +48,7 @@ module lab4_top(
     wire clk_25M;
     wire [8:0] pos_out;
     wire [15:0] seg_out;
+    wire [11:0] color_out;
     
     wire [3:0] posVertical;
     wire [4:0] posHorizontal;
@@ -76,7 +77,8 @@ module lab4_top(
         .GPIO2_tri_i(ledswitch),
         .GPIO1_tri_o(pos_out),
         .GPIO2_tri_o(seg_out),
-        .GPIO3_tri_o(LED)
+        .GPIO3_tri_o(LED),
+        .GPIO4_tri_o(color_out)
         );
         
         
@@ -105,9 +107,9 @@ module lab4_top(
     assign withinConstraint =( vcount >= 32 * posVertical && vcount <= 32 * posVertical + 32) 
                             && (hcount >= 32 * posHorizontal && hcount <= 32 * posHorizontal + 32);
                     
-    assign vgaRed = 4'b0000;
-    assign vgaBlue = 4'b0000;
-    assign vgaGreen = blank ? 4'b0000 : withinConstraint ? 4'b1111 : 4'b0000;
+    assign vgaRed = blank ? 4'b0000 : withinConstraint ? color_out[11:8] : 4'b0000;
+    assign vgaBlue = blank ? 4'b0000 : withinConstraint ? color_out[7:4] : 4'b0000;
+    assign vgaGreen = blank ? 4'b0000 : withinConstraint ? color_out[3:0] : 4'b0000;
     assign A = seg_out[3:0];
     assign B = seg_out[7:4];
     assign C = seg_out[11:8];
